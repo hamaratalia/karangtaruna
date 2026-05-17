@@ -42,8 +42,28 @@ st.markdown("""
     --text-light:  #8090B5;
 }
 
-*, html, body, [class*="css"] { font-family: 'Poppins', sans-serif !important; }
+/* ======= 1. ATUR FONT POPPINS (TANPA MERUSAK IKON) ======= */
+*, html, body, [class*="css"] { 
+    font-family: 'Poppins', sans-serif; 
+}
+
+/* ======= 2. PROTEKSI FONT IKON BAWAAN STREAMLIT ======= */
+[data-testid="stIconMaterial"], 
+[data-testid="stHeaderSidebarToggle"] *,
+button[aria-label*="sidebar" i] *,
+.stSidebarCollapsedControl * {
+    font-family: 'Material Symbols Outlined', 'Material Symbols Rounded', 'Material Icons' !important;
+    font-size: inherit;
+}
 .stApp { background: var(--bg); }
+            
+/* Material icon fallback text */
+span.material-icons,
+span.material-symbols-rounded,
+span[class*="material"] {
+    font-size: 0 !important;
+    color: transparent !important;
+}
 .block-container {
     padding-top: 1.2rem !important;
     padding-bottom: 2rem !important;
@@ -1093,7 +1113,7 @@ def render_kpi(monthly, pred):
     ti = monthly['Pemasukan'].sum(); to = monthly['Pengeluaran'].sum()
     sur = ti - to; sal = monthly['SaldoAkhir'].iloc[-1]; pct = (sur / ti * 100) if ti > 0 else 0.0
     kartu = [
-        {'w': CLR_NAVY,  'icon':'🏦', 'label':'Saldo Kas',        'nilai': rupiah(sal, True), 'sub':'Uang tunai tersedia saat ini', 'delta':''},
+        {'w': CLR_NAVY,  'icon':f'<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{CLR_NAVY}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>', 'label':'Saldo Kas', 'nilai': rupiah(sal, True), 'sub':'Uang tunai tersedia saat ini', 'delta':''},
         {'w': CLR_GREEN, 'icon':'↑',  'label':'Total Pemasukan',  'nilai': rupiah(ti, True),  'sub':'Semua uang yang masuk',        'delta': _delta_label(monthly,'Pemasukan')},
         {'w': CLR_RED,   'icon':'↓',  'label':'Total Pengeluaran','nilai': rupiah(to, True),  'sub':'Semua uang yang keluar',       'delta': _delta_label(monthly,'Pengeluaran')},
         {'w': CLR_GREEN if sur >= 0 else CLR_RED,
@@ -1108,7 +1128,7 @@ def render_kpi(monthly, pred):
         with col:
             st.markdown(f"""
             <div class="kpi-card" style="border-top-color:{k['w']};">
-                <div style="font-size:1.4rem;margin-bottom:6px;color:{k['w']};font-weight:800;line-height:1;">{k['icon']}</div>
+                <div style="height:30px;margin-bottom:6px;display:flex;align-items:center;justify-content:center;color:{k['w']};font-size:1.4rem;font-weight:800;line-height:1;">{k['icon']}</div>
                 <div class="kpi-label">{k['label']}</div>
                 <div class="kpi-value">{k['nilai']}</div>
                 <div class="kpi-sub">{k['sub']}</div>
@@ -1538,6 +1558,27 @@ def render_akurasi(monthly, pred):
 # ============================================================
 
 def main():
+    # Sembunyikan tombol collapse sidebar (tulisan "double_arrow_right")
+    st.markdown("""
+    <script>
+    (function removeSidebarToggle() {
+        function hide() {
+            var selectors = [
+                '[data-testid="stSidebarCollapsedControl"]',
+                '[data-testid="collapsedControl"]'
+            ];
+            selectors.forEach(function(sel) {
+                var els = document.querySelectorAll(sel);
+                els.forEach(function(el) { el.style.display = 'none'; });
+            });
+        }
+        hide();
+        var obs = new MutationObserver(hide);
+        obs.observe(document.body, { childList: true, subtree: true });
+    })();
+    </script>
+    """, unsafe_allow_html=True)
+
     uploaded, tahun_sel, bulan_sel = render_sidebar()
     tgl = datetime.now().strftime('%d %B %Y')
     st.markdown(f"""
