@@ -111,9 +111,10 @@ st.markdown("""
 }
 .welcome-icon {
     width: 64px; height: 64px; border-radius: 20px; margin: 0 auto 14px;
-    background: linear-gradient(135deg, var(--orange-dark), var(--orange));
+    background: linear-gradient(135deg, #1B3A6B, #2E5BBA);
     display: flex; align-items: center; justify-content: center;
     font-size: 1.4rem; font-weight: 900; color: white; letter-spacing: 1px;
+    box-shadow: 0 4px 18px rgba(46,91,186,0.35);
 }
 .welcome-title { font-size: 1.45rem; font-weight: 900; color: var(--navy); margin-bottom: 10px; }
 .welcome-desc  { font-size: 0.90rem; color: var(--text-mid); line-height: 1.75; max-width: 500px; margin: 0 auto 28px; }
@@ -271,15 +272,52 @@ st.markdown("""
     background: rgba(243,156,18,0.15) !important;
     border: 1px solid rgba(243,156,18,0.35) !important;
     border-radius: 8px !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    overflow: hidden !important;
 }
-[data-testid="stSidebarCollapseButton"] svg { fill: var(--orange) !important; }
+[data-testid="stSidebarCollapseButton"] * {
+    font-size: 0 !important;
+    color: transparent !important;
+}
+[data-testid="stSidebarCollapseButton"] svg {
+    fill: var(--orange) !important;
+    width: 18px !important; height: 18px !important;
+    flex-shrink: 0 !important;
+    font-size: initial !important;
+}
+
+/* Kotak navigasi saat sidebar ditutup — tambah ikon panah */
 [data-testid="collapsedControl"] {
     display: flex !important; visibility: visible !important;
+    align-items: center !important; justify-content: center !important;
     background: var(--navy) !important;
-    border: 1px solid rgba(243,156,18,0.35) !important;
-    border-radius: 0 8px 8px 0 !important;
+    border: 1px solid rgba(243,156,18,0.45) !important;
+    border-radius: 0 10px 10px 0 !important;
+    width: 28px !important; min-width: 28px !important;
+    font-size: 0 !important; color: transparent !important;
+    overflow: hidden !important;
+    box-shadow: 3px 0 12px rgba(0,0,0,0.18) !important;
 }
-[data-testid="collapsedControl"] svg { fill: var(--orange) !important; }
+[data-testid="collapsedControl"] * {
+    font-size: 0 !important;
+    color: transparent !important;
+}
+[data-testid="collapsedControl"] svg {
+    fill: var(--orange) !important;
+    width: 18px !important; height: 18px !important;
+    flex-shrink: 0 !important;
+    font-size: initial !important;
+}
+/* Ikon panah kanan via pseudo-element sebagai fallback */
+[data-testid="collapsedControl"]::after {
+    content: '›';
+    color: var(--orange) !important;
+    font-size: 1.5rem !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    display: block !important;
+}
 
 /* Label selectbox — Pilih Tahun & Pilih Bulan */
 [data-testid="stSidebar"] label,
@@ -559,11 +597,17 @@ cssbackground-color: #2E5BBA !important; border-color: var(--orange) !important;
     font-size: 0.82rem !important; font-weight: 700 !important;
     font-family: 'Poppins', sans-serif !important; cursor: pointer !important;
     width: 100% !important; transition: background 0.2s !important;
+    overflow: hidden !important;
 }
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button:hover { background: var(--orange) !important; }
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button span,
-[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button p {
-    color: white !important; font-size: 0.82rem !important; font-weight: 700 !important;
+/* Sembunyikan span duplikat penyebab teks "uploadupload" */
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button span:first-child {
+    display: none !important;
+}
+[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button span:last-child {
+    display: inline !important;
+    color: white !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
 }
 [data-testid="stSidebar"] [data-testid="stFileUploaderFile"] {
     background: rgba(39,174,96,0.12) !important; border-radius: 8px !important;
