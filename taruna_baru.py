@@ -1293,16 +1293,16 @@ def chart_saldo(monthly):
 def chart_bulanan(monthly):
     fig = go.Figure()
     fig.add_trace(go.Bar(x=monthly['BulanPendek'], y=monthly['Pemasukan'], name='Pemasukan',
-        marker_color=CLR_GREEN, marker_line_width=0, hovertemplate='%{x}<br>Pemasukan: Rp %{y:,.0f}<extra></extra>'))
+        marker_color=CLR_NAVY, marker_line_width=0, hovertemplate='%{x}<br>Pemasukan: Rp %{y:,.0f}<extra></extra>'))
     fig.add_trace(go.Bar(x=monthly['BulanPendek'], y=monthly['Pengeluaran'], name='Pengeluaran',
-        marker_color=CLR_RED, marker_line_width=0, hovertemplate='%{x}<br>Pengeluaran: Rp %{y:,.0f}<extra></extra>'))
+        marker_color=CLR_GOLD, marker_line_width=0, hovertemplate='%{x}<br>Pengeluaran: Rp %{y:,.0f}<extra></extra>'))
     fig.update_layout(title=dict(text="Pemasukan vs Pengeluaran per Bulan", font=dict(size=13, color=CLR_DARK)),
         barmode='group', yaxis=dict(tickformat=",", gridcolor="#DDE3EF"),
         xaxis=dict(gridcolor="rgba(0,0,0,0)"), legend=dict(orientation="h", y=1.10, x=0), **LAYOUT)
     return fig
 
 def chart_surplus(monthly):
-    colors = [CLR_GREEN if s >= 0 else CLR_RED for s in monthly['Surplus']]
+    colors = [CLR_NAVY if s >= 0 else CLR_GOLD for s in monthly['Surplus']]
     fig = go.Figure(go.Bar(x=monthly['BulanPendek'], y=monthly['Surplus'],
         marker_color=colors, marker_line_width=0, hovertemplate='%{x}<br>Rp %{y:,.0f}<extra></extra>'))
     fig.add_hline(y=0, line_dash="dash", line_color="#1B3A6B", line_width=1.5,
@@ -1315,11 +1315,11 @@ def chart_surplus(monthly):
 def chart_donut(ti, to):
     if ti <= 0 and to <= 0: return go.Figure()
     if ti >= to:
-        sur = ti - to; labels = ['Pengeluaran', 'Surplus / Ditabung']; values = [to, sur]; colors = [CLR_RED, CLR_GREEN]
+        sur = ti - to; labels = ['Pengeluaran', 'Surplus / Ditabung']; values = [to, sur]; colors = [CLR_GOLD, CLR_NAVY]
         pct = sur / ti * 100 if ti > 0 else 0
         center = f"<b>{pct:.1f}%</b><br><span style='font-size:10px'>ditabung</span>"
     else:
-        kelebihan = to - ti; labels = ['Ditanggung Pemasukan', 'Kelebihan Pengeluaran']; values = [ti, kelebihan]; colors = [CLR_BLUE, CLR_RED]
+        kelebihan = to - ti; labels = ['Ditanggung Pemasukan', 'Kelebihan Pengeluaran']; values = [ti, kelebihan]; colors = [CLR_NAVY, CLR_GOLD]
         pct = kelebihan / to * 100 if to > 0 else 0
         center = f"<b style='color:#E74C3C;'>defisit</b><br><span style='font-size:10px'>{pct:.1f}%</span>"
     fig = go.Figure(go.Pie(labels=labels, values=values, hole=0.62,
@@ -1341,14 +1341,14 @@ def chart_forecast(monthly, pred):
     ci_e_hi = [f['pengeluaran']+f.get('ci_pen_80',0)*((i+1)**0.5) for i,f in enumerate(fc3)]
     ci_e_lo = [max(0,f['pengeluaran']-f.get('ci_pen_80',0)*((i+1)**0.5)) for i,f in enumerate(fc3)]
     fig = make_subplots(rows=1, cols=2, subplot_titles=("Forecast Pemasukan","Forecast Pengeluaran"), horizontal_spacing=0.12)
-    fig.add_trace(go.Scatter(x=hist_x, y=hist_p, name='Aktual Pemasukan', line=dict(color=CLR_GREEN, width=2.5), marker=dict(size=7), mode='lines+markers', hovertemplate='%{x}: Rp %{y:,.0f}<extra></extra>'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=hist_x, y=hist_p, name='Aktual Pemasukan', line=dict(color=CLR_NAVY, width=2.5), marker=dict(size=7), mode='lines+markers', hovertemplate='%{x}: Rp %{y:,.0f}<extra></extra>'), row=1, col=1)
     fig.add_trace(go.Scatter(x=fc_x, y=ci_p_hi, mode='lines', line=dict(width=0), showlegend=False, hoverinfo='skip'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=fc_x, y=ci_p_lo, name='Rentang Prediksi (80%)', mode='lines', line=dict(width=0), fill='tonexty', fillcolor='rgba(39,174,96,0.18)', showlegend=True, hoverinfo='skip'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=fc_x, y=fc_p, name='Forecast Pemasukan', mode='lines+markers', line=dict(color=CLR_GREEN, width=2, dash='dot'), marker=dict(size=9, symbol='diamond', color=CLR_GREEN), hovertemplate='%{x}: Rp %{y:,.0f}<extra></extra>'), row=1, col=1)
-    fig.add_trace(go.Scatter(x=hist_x, y=hist_e, name='Aktual Pengeluaran', line=dict(color=CLR_RED, width=2.5), marker=dict(size=7), mode='lines+markers', hovertemplate='%{x}: Rp %{y:,.0f}<extra></extra>'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=fc_x, y=ci_p_lo, name='Rentang Prediksi (80%)', mode='lines', line=dict(width=0), fill='tonexty', fillcolor='rgba(27,58,107,0.18)', showlegend=True, hoverinfo='skip'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=fc_x, y=fc_p, name='Forecast Pemasukan', mode='lines+markers', line=dict(color=CLR_NAVY, width=2, dash='dot'), marker=dict(size=9, symbol='diamond', color=CLR_NAVY), hovertemplate='%{x}: Rp %{y:,.0f}<extra></extra>'), row=1, col=1)
+    fig.add_trace(go.Scatter(x=hist_x, y=hist_e, name='Aktual Pengeluaran', line=dict(color=CLR_GOLD, width=2.5), marker=dict(size=7), mode='lines+markers', hovertemplate='%{x}: Rp %{y:,.0f}<extra></extra>'), row=1, col=2)
     fig.add_trace(go.Scatter(x=fc_x, y=ci_e_hi, mode='lines', line=dict(width=0), showlegend=False, hoverinfo='skip'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=fc_x, y=ci_e_lo, name='Rentang Prediksi Pengeluaran', mode='lines', line=dict(width=0), fill='tonexty', fillcolor='rgba(231,76,60,0.18)', showlegend=True, hoverinfo='skip'), row=1, col=2)
-    fig.add_trace(go.Scatter(x=fc_x, y=fc_e, name='Forecast Pengeluaran', mode='lines+markers', line=dict(color=CLR_RED, width=2, dash='dot'), marker=dict(size=9, symbol='diamond', color=CLR_RED), hovertemplate='%{x}: Rp %{y:,.0f}<extra></extra>'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=fc_x, y=ci_e_lo, name='Rentang Prediksi Pengeluaran', mode='lines', line=dict(width=0), fill='tonexty', fillcolor='rgba(243,156,18,0.18)', showlegend=True, hoverinfo='skip'), row=1, col=2)
+    fig.add_trace(go.Scatter(x=fc_x, y=fc_e, name='Forecast Pengeluaran', mode='lines+markers', line=dict(color=CLR_GOLD, width=2, dash='dot'), marker=dict(size=9, symbol='diamond', color=CLR_GOLD), hovertemplate='%{x}: Rp %{y:,.0f}<extra></extra>'), row=1, col=2)
     fig.update_layout(title=dict(text=f"Visualisasi Perkiraan 3 Bulan ke Depan ({pred['model']})", font=dict(size=13, color=CLR_DARK)),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(family="Poppins, sans-serif", size=11, color="#1A2D5A"),
         margin=dict(l=12,r=12,t=80,b=80), legend=dict(orientation="h", y=-0.22, x=0.5, xanchor="center", bgcolor="rgba(255,255,255,0.90)", bordercolor="#DDE3EF", borderwidth=1, font=dict(size=10)))
@@ -1365,7 +1365,7 @@ def chart_akurasi(monthly):
     me = LinearRegression().fit(xs[:sp], monthly['Pengeluaran'].values[:sp])
     pp = mp.predict(xs[sp:]); pe = me.predict(xs[sp:]); xl = monthly['BulanNama'].values[sp:]
     fig = make_subplots(rows=1, cols=2, subplot_titles=("Akurasi Prediksi Pemasukan","Akurasi Prediksi Pengeluaran"))
-    for col_idx, (actuals, preds, clr, name) in enumerate([(monthly['Pemasukan'].values[sp:], pp, CLR_GREEN, 'Pemasukan'),(monthly['Pengeluaran'].values[sp:], pe, CLR_RED, 'Pengeluaran')], 1):
+    for col_idx, (actuals, preds, clr, name) in enumerate([(monthly['Pemasukan'].values[sp:], pp, CLR_NAVY, 'Pemasukan'),(monthly['Pengeluaran'].values[sp:], pe, CLR_GOLD, 'Pengeluaran')], 1):
         fig.add_trace(go.Scatter(x=xl, y=actuals, name=f'Aktual {name}', line=dict(color=clr, width=2.5), marker=dict(size=8), mode='lines+markers', showlegend=(col_idx==1)), row=1, col=col_idx)
         fig.add_trace(go.Scatter(x=xl, y=preds, name=f'Prediksi {name}', line=dict(color=clr, width=2.5, dash='dot'), marker=dict(size=8, symbol='diamond'), showlegend=(col_idx==1)), row=1, col=col_idx)
     fig.update_layout(title=dict(text="Akurasi Prediksi: Data Nyata vs Perkiraan", font=dict(size=13, color=CLR_DARK)),
@@ -1382,8 +1382,8 @@ def chart_kategori(df, tahun):
     if len(unique_kat) <= 1 and (len(unique_kat) == 0 or unique_kat[0] == 'Umum'): return None
     kat = (d.groupby('Kategori').agg(Pengeluaran=('Pengeluaran','sum'), Pemasukan=('Pemasukan','sum')).reset_index().sort_values('Pengeluaran', ascending=True))
     fig = go.Figure()
-    fig.add_trace(go.Bar(y=kat['Kategori'], x=kat['Pengeluaran'], orientation='h', name='Pengeluaran', marker_color=CLR_RED, marker_line_width=0, hovertemplate='%{y}<br>Pengeluaran: Rp %{x:,.0f}<extra></extra>'))
-    fig.add_trace(go.Bar(y=kat['Kategori'], x=kat['Pemasukan'], orientation='h', name='Pemasukan', marker_color=CLR_GREEN, marker_line_width=0, hovertemplate='%{y}<br>Pemasukan: Rp %{x:,.0f}<extra></extra>'))
+    fig.add_trace(go.Bar(y=kat['Kategori'], x=kat['Pengeluaran'], orientation='h', name='Pengeluaran', marker_color=CLR_GOLD, marker_line_width=0, hovertemplate='%{y}<br>Pengeluaran: Rp %{x:,.0f}<extra></extra>'))
+    fig.add_trace(go.Bar(y=kat['Kategori'], x=kat['Pemasukan'], orientation='h', name='Pemasukan', marker_color=CLR_NAVY, marker_line_width=0, hovertemplate='%{y}<br>Pemasukan: Rp %{x:,.0f}<extra></extra>'))
     fig.update_layout(title=dict(text="Pemasukan & Pengeluaran per Kategori", font=dict(size=13, color=CLR_DARK)),
         barmode='group', xaxis=dict(tickformat=",", gridcolor="#DDE3EF"), yaxis=dict(gridcolor="rgba(0,0,0,0)"),
         legend=dict(orientation="h", y=1.10, x=0), **LAYOUT)
