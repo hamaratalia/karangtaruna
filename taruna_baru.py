@@ -1112,15 +1112,54 @@ def _delta_label(monthly, col):
 def render_kpi(monthly, pred):
     ti = monthly['Pemasukan'].sum(); to = monthly['Pengeluaran'].sum()
     sur = ti - to; sal = monthly['SaldoAkhir'].iloc[-1]; pct = (sur / ti * 100) if ti > 0 else 0.0
+    _sur_clr = CLR_GREEN if sur >= 0 else CLR_RED
+    # ── SVG helpers (stroke-width 1.8, 26×26, Feather-style) ──────────────
+    def _svg(stroke, paths):
+        return (f'<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" '
+                f'viewBox="0 0 24 24" fill="none" stroke="{stroke}" '
+                f'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+                f'{paths}</svg>')
+
+    ico_bank   = _svg(CLR_NAVY,
+                      '<line x1="3" y1="22" x2="21" y2="22"/>'
+                      '<line x1="6" y1="18" x2="6" y2="11"/>'
+                      '<line x1="10" y1="18" x2="10" y2="11"/>'
+                      '<line x1="14" y1="18" x2="14" y2="11"/>'
+                      '<line x1="18" y1="18" x2="18" y2="11"/>'
+                      '<polygon points="12 2 20 7 4 7"/>')
+
+    ico_up     = _svg(CLR_NAVY,
+                      '<line x1="12" y1="19" x2="12" y2="5"/>'
+                      '<polyline points="5 12 12 5 19 12"/>')
+
+    ico_down   = _svg(CLR_NAVY,
+                      '<line x1="12" y1="5" x2="12" y2="19"/>'
+                      '<polyline points="19 12 12 19 5 12"/>')
+
+    ico_sur    = (f'<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" '
+                  f'viewBox="0 0 24 24" fill="{CLR_NAVY}" stroke="{CLR_NAVY}" '
+                  f'stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'
+                  + ('<polygon points="12 4 22 20 2 20"/>' if sur >= 0
+                     else '<polygon points="12 20 2 4 22 4"/>')
+                  + '</svg>')
+
+    ico_pct    = _svg(CLR_NAVY,
+                      '<line x1="19" y1="5" x2="5" y2="19"/>'
+                      '<circle cx="6.5" cy="6.5" r="2.5"/>'
+                      '<circle cx="17.5" cy="17.5" r="2.5"/>')
+
     kartu = [
-        {'w': CLR_NAVY,  'icon':f'<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="{CLR_NAVY}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>', 'label':'Saldo Kas', 'nilai': rupiah(sal, True), 'sub':'Uang tunai tersedia saat ini', 'delta':''},
-        {'w': CLR_GREEN, 'icon':'↑',  'label':'Total Pemasukan',  'nilai': rupiah(ti, True),  'sub':'Semua uang yang masuk',        'delta': _delta_label(monthly,'Pemasukan')},
-        {'w': CLR_RED,   'icon':'↓',  'label':'Total Pengeluaran','nilai': rupiah(to, True),  'sub':'Semua uang yang keluar',       'delta': _delta_label(monthly,'Pengeluaran')},
-        {'w': CLR_GREEN if sur >= 0 else CLR_RED,
-         'icon': '▲' if sur >= 0 else '▼',
-         'label':'Surplus / Defisit', 'nilai': rupiah(sur, True),
+        {'w': CLR_NAVY,   'icon': ico_bank, 'label':'Saldo Kas',
+         'nilai': rupiah(sal, True),  'sub':'Uang tunai tersedia saat ini',   'delta':''},
+        {'w': CLR_GREEN,  'icon': ico_up,   'label':'Total Pemasukan',
+         'nilai': rupiah(ti, True),   'sub':'Semua uang yang masuk',          'delta': _delta_label(monthly,'Pemasukan')},
+        {'w': CLR_RED,    'icon': ico_down, 'label':'Total Pengeluaran',
+         'nilai': rupiah(to, True),   'sub':'Semua uang yang keluar',         'delta': _delta_label(monthly,'Pengeluaran')},
+        {'w': _sur_clr,   'icon': ico_sur,  'label':'Surplus / Defisit',
+         'nilai': rupiah(sur, True),
          'sub':'Keuangan sehat' if sur >= 0 else 'Pengeluaran melebihi pemasukan', 'delta':''},
-        {'w': CLR_GOLD, 'icon':'%', 'label':'Persentase Ditabung', 'nilai': f"{max(0, pct):.1f}%",
+        {'w': CLR_GOLD,   'icon': ico_pct,  'label':'Persentase Ditabung',
+         'nilai': f"{max(0, pct):.1f}%",
          'sub': f"dari pemasukan  ·  {'Target >20% tercapai' if pct >= 20 else 'Target >20%'}", 'delta':''},
     ]
     cols = st.columns(5)
